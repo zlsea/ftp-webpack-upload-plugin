@@ -32,9 +32,3 @@ new FtpWebpackUploadPlugin({
 > uploadPath: accept String(Unified Path Upload) or Object(Subpath Upload)
 
           
-
-
-
-## keywords
-
- #### ftp webpack plugins

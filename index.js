@@ -3,26 +3,37 @@ const PromiseFtp = require('promise-ftp');
 const ftp = new PromiseFtp();
 class FtpWebpackUploadPlugin {
     constructor(options) {
+        this.allPath = '';
         this.init(options);
         this.ftpConfig = options.ftpConfig;
         this.uploadPath = options.uploadPath;
     }
     init(options) {
         if (!this.isObject(options)) {
-            console.log('FTP:参数传入异常！');
-            return false;
+            throw 'FTP:参数传入异常！';
         }
         if (options.ftpConfig) {
             this.init(options.ftpConfig);
         }
+
         if (options.uploadPath) {
-            this.init(options.uploadPath);
+            if (this.isString(options.uploadPath)) {
+                this.allPath = options.uploadPath;
+            } else {
+                this.init(options.uploadPath);
+            }
         }
     }
     isObject(obj) {
         return Object.prototype.toString.call(obj) === '[object Object]';
     }
+    isString(obj) {
+        return Object.prototype.toString.call(obj) === '[object String]';
+    }
     getFileType(filename) {
+        if (this.allPath) {
+            return this.allPath;
+        }
         if (/\.(css)(\?.*)?$/.test(filename)) {
             return this.uploadPath.css;
         }
@@ -54,7 +65,6 @@ class FtpWebpackUploadPlugin {
                 let filename = assetsKey[i].split('/').pop();
                 let path = this.getFileType(filename);
                 if (path) {
-                    console.log(path);
                     try {
                         await ftp.cwd(path);
                     } catch (e) {
